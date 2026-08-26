@@ -30,9 +30,12 @@ type Aluno struct {
 var db *sql.DB
 
 func initDB() {
-	dbURL := "postgresql://banco_api_alunos_06np_user:955WzzG1drWdFXvjkj35LzPWCBxTZZ2m@dpg-da7lnhafngtc73fsj0fg-a/banco_api_alunos_06np"
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		// Fallback para testes locais no VSCode
 
-	fmt.Println("DATABASE:", dbURL)
+		dbURL = "postgresql://banco_api_alunos_06np_user:955WzzG1drWdFXvjkj35LzPWCBxTZZ2m@dpg-da7lnhafngtc73fsj0fg-a/banco_api_alunos_06np"
+	}
 
 	var err error
 	db, err = sql.Open("postgres", dbURL)
@@ -40,11 +43,28 @@ func initDB() {
 		log.Fatalf("Erro ao abrir conexão com o banco: %v", err)
 	}
 
-	if err := db.Ping(); err != nil {
+	err = db.Ping()
+	if err != nil {
 		log.Fatalf("Erro ao conectar no banco do Render: %v", err)
 	}
 
 	fmt.Println("Conectado ao PostgreSQL com sucesso!")
+
+	// Criar a tabela de alunos se ela não existir
+	query := `
+	CREATE TABLE IF NOT EXISTS alunos (
+		codigo VARCHAR(36) PRIMARY KEY,
+		nome VARCHAR(100) NOT NULL,
+		nota1 NUMERIC(4,2) NOT NULL,
+		nota2 NUMERIC(4,2) NOT NULL,
+		media NUMERIC(4,2) NOT NULL,
+		situacao VARCHAR(20) NOT NULL
+	);`
+
+	_, err = db.Exec(query)
+	if err != nil {
+		log.Fatalf("Erro ao criar tabela alunos: %v", err)
+	}
 }
 
 // Função para gerar a média e a situação
