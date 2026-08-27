@@ -16,9 +16,6 @@ import (
 	// e formatar textos.
 	"fmt"
 
-	// OS será utilizado para acessar as variáveis de ambiente
-	"os"
-
 	// log permite registrar mensagens de erro e encerrar
 	// a aplicação em situações críticas.
 	"log"
@@ -86,8 +83,7 @@ var db *sql.DB
 // e cria a tabela "alunos", caso ela ainda não exista.
 func initDB() {
 	// bdURL deve possuir as informações necessárias para realizar a conexão com o banco de dados
-	//dbURL := "postgresql://banco_api_alunos_06np_user:955WzzG1drWdFXvjkj35LzPWCBxTZZ2m@dpg-da7lnhafngtc73fsj0fg-a/banco_api_alunos_06np"
-	dbURL := os.Getenv("DATABASE_URL")
+	dbURL := "postgresql://banco_api_alunos_06np_user:955WzzG1drWdFXvjkj35LzPWCBxTZZ2m@dpg-da7lnhafngtc73fsj0fg-a/banco_api_alunos_06np"
 
 	// Declara a variável que armazenará possíveis erros.
 	var err error
